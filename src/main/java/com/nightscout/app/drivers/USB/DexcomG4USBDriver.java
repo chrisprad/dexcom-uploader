@@ -75,6 +75,9 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 		// configuration.getUsbInterfaces().get(0);
 		logger.debug("Control iface=" + controlInterface);
 		// class should be USB_CLASS_COMM
+		if(controlInterface.isClaimed())
+			logger.warn("Control interface is already claimed, indicating an error occurred on a previous close()");
+
 		try {
 			controlInterface.claim((this.forceClaimDevices) ? ForceClaimPolicy : DoNotForceClaimPolicy);
 		} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
@@ -84,6 +87,8 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 		dataInterface = this.getFirstDataInterface();
 		logger.debug("data iface=" + dataInterface);
 		// class should be USB_CLASS_CDC_DATA
+		if(dataInterface.isClaimed())
+			logger.warn("Control interface is already claimed, indicating an error occurred on a previous close()");
 		try {
 			dataInterface.claim((this.forceClaimDevices) ? ForceClaimPolicy : DoNotForceClaimPolicy);
 		} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
@@ -220,7 +225,7 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 	protected final UsbInterfacePolicy DoNotForceClaimPolicy = new UsbInterfacePolicy() {
 		@Override
 		public boolean forceClaim(UsbInterface usbInterface) {
-			return true;
+			return false;
 		}
 	};
 }
