@@ -12,7 +12,6 @@ import com.nightscout.core.model.GlucoseUnit;
 import com.nightscout.core.preferences.NightscoutPreferences;
 
 public class LinuxNightscoutPreferences implements NightscoutPreferences {
-
 	protected boolean restApiEnabled;
 	protected List<String> restApiBaseUris;
 	protected boolean calibrationUploadEnabled;
@@ -27,6 +26,7 @@ public class LinuxNightscoutPreferences implements NightscoutPreferences {
 	protected String pwdName;
 	protected boolean AskedForData;
 	protected String configurationFileName;
+	protected Boolean forceInitialDetach;
 	
 	public LinuxNightscoutPreferences() {
 		
@@ -185,7 +185,12 @@ public class LinuxNightscoutPreferences implements NightscoutPreferences {
 		props.store(writer,"dexcom-uploader configuration file");
 		writer.close();
 	}
-	
+	public Boolean isForceInitialDetach() {
+		return forceInitialDetach;
+	}
+	public void setForceInitialDetach(Boolean forceInitialDetach) {
+		this.forceInitialDetach = forceInitialDetach;
+	}	
 	protected void LoadProperties(Properties props) {
 		this.restApiEnabled = Boolean.parseBoolean(props.getProperty("restApiEnabled", "false"));
 		List<String> restUriList = Arrays.asList(props.getProperty("restApiBaseUris", "false").split(","));
@@ -201,7 +206,7 @@ public class LinuxNightscoutPreferences implements NightscoutPreferences {
 		this.preferredUnits = GlucoseUnit.valueOf(props.getProperty("preferredUnits", "MGDL"));
 		this.pwdName = props.getProperty("pwdName", "");
 		this.AskedForData = Boolean.parseBoolean(props.getProperty("AskedForData", "false"));
-
+		this.forceInitialDetach = Boolean.parseBoolean(props.getProperty("ForceInitialDetach"));
 	}
 	protected void SaveProperties(Properties props) {
 		props.setProperty("restApiEnabled", Boolean.toString(restApiEnabled));
@@ -223,5 +228,6 @@ public class LinuxNightscoutPreferences implements NightscoutPreferences {
 		props.setProperty("preferredUnits", preferredUnits.toString());
 		props.setProperty("pwdName", (pwdName != null) ? pwdName : "");
 		props.setProperty("AskedForData", Boolean.toString(AskedForData));
+		props.setProperty("ForceInitialDetach", Boolean.toString(forceInitialDetach));
 	}
 }

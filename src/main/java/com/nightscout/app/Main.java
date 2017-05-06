@@ -45,7 +45,7 @@ public class Main {
 		logger.debug("Initializing LibUSB");
 		LibUsb.init(null);
 		// TODO: check override flag from Preferences
-		if (LibUsb.hasCapability(LibUsb.CAP_SUPPORTS_DETACH_KERNEL_DRIVER)) {
+		if (LibUsb.hasCapability(LibUsb.CAP_SUPPORTS_DETACH_KERNEL_DRIVER) || prefs.isForceInitialDetach()) {
 			logger.info("Attempting to detach the ACM kernel driver");
 			while (true) {
 				try {
