@@ -43,6 +43,6 @@ Here's a recent example from the debug.log of my current system
 2017.May.03 23:39:34.162 [dexcom-uploader] DEBUG - Reading system time...
 2017.May.03 23:39:34.417 [dexcom-uploader] INFO - Dexcom G4/G5 device disconnected
 2017.May.03 23:39:35.094 [dexcom-uploader] DEBUG - The download run completed with a status of SUCCESS.
-2017.May.03 23:39:35.100 [dexcom-uploader] INFO - The most recent sgv is **114 mg/dl** at Wed May 03 23:35:56 EDT 2017
+2017.May.03 23:39:35.100 [dexcom-uploader] INFO - The most recent sgv is 114 mg/dl at Wed May 03 23:35:56 EDT 2017
 2017.May.03 23:39:35.105 [dexcom-uploader] INFO - The next run will occur in 203 seconds
 ```

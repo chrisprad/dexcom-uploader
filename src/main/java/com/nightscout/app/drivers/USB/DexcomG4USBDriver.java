@@ -80,10 +80,15 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 
 		try {
 			controlInterface.claim((this.forceClaimDevices) ? ForceClaimPolicy : DoNotForceClaimPolicy);
-		} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
+		} catch (UsbNotActiveException | UsbException e) {
 			logger.error("An error occurred during the claim operation of the control interface", e);
 			e.printStackTrace();
+		} catch(UsbDisconnectedException e) {
+			logger.warn("The USB device appears to be unplugged.");
+			throw new IOException("The USB device appears to be unplugged.");
 		}
+		
+	
 		dataInterface = this.getFirstDataInterface();
 		logger.debug("data iface=" + dataInterface);
 		// class should be USB_CLASS_CDC_DATA
@@ -91,9 +96,12 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 			logger.warn("Control interface is already claimed, indicating an error occurred on a previous close()");
 		try {
 			dataInterface.claim((this.forceClaimDevices) ? ForceClaimPolicy : DoNotForceClaimPolicy);
-		} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
+		} catch (UsbNotActiveException | UsbException e) {
 			logger.error("An error occurred during the claim operation of the data interface", e);
 			e.printStackTrace();
+		} catch(UsbDisconnectedException e) {
+			logger.warn("The USB device appears to be unplugged.");
+			throw new IOException("The USB device appears to be unplugged.");
 		}
 
 		readEndpoint = getFirstEndpointByDirection(dataInterface, UsbConst.ENDPOINT_DIRECTION_IN);
@@ -114,17 +122,23 @@ public class DexcomG4USBDriver extends AbstractUSBDriver {
 			try {
 				controlInterface.release();
 				controlInterface = null;
-			} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
+			} catch (UsbNotActiveException | UsbException e) {
 				logger.error("An error occurred during the release of the claim release of the control interface", e);
 				e.printStackTrace();
+			} catch(UsbDisconnectedException e) {
+				logger.warn("The USB device appears to be unplugged.");
+				throw new IOException("The USB device appears to be unplugged.");
 			}
 		if (dataInterface != null)
 			try {
 				dataInterface.release();
 				dataInterface = null;
-			} catch (UsbNotActiveException | UsbDisconnectedException | UsbException e) {
+			} catch (UsbNotActiveException | UsbException e) {
 				logger.error("An error occurred during the release of the claim release of the data interface", e);
 				e.printStackTrace();
+			} catch(UsbDisconnectedException e) {
+				logger.warn("The USB device appears to be unplugged.");
+				throw new IOException("The USB device appears to be unplugged.");
 			}
 		if (powerManagementEnabled) {
 			USBPower.powerOff();

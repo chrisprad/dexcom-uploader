@@ -19,6 +19,7 @@ import com.nightscout.core.drivers.AbstractUploaderDevice;
 import com.nightscout.core.drivers.DeviceTransportFactory;
 import com.nightscout.core.drivers.DexcomG4;
 import com.nightscout.core.model.DownloadResults;
+import com.nightscout.core.model.DownloadStatus;
 import com.nightscout.core.model.SensorGlucoseValueEntry;
 
 public class Main {
@@ -78,21 +79,23 @@ public class Main {
 				logger.debug("Starting download run...");
 				device.setNumOfPages(1);
 				DownloadResults res = device.download();
-				nextUpload = res.getNextUploadTime() + 1000;
-				if (nextUpload < 0)
-					nextUpload = 300000;
-				logger.debug("The download run completed with a status of {}.",
-						res.getDownload().download_status.toString());
-				if (!res.getDownload().sgv.isEmpty()) {
-					List<SensorGlucoseValueEntry> sgvs = res.getDownload().sgv;
-					if (sgvs != null && sgvs.size() > 0) {
-						SensorGlucoseValueEntry latestSgv = sgvs.get(sgvs.size() - 1);
-						logger.info("The most recent sgv is {} mg/dl at {}", latestSgv.sgv_mgdl,
-								Utils.receiverTimeToDate(latestSgv.disp_timestamp_sec).toString());
+				if (res.getDownloadStatus() == DownloadStatus.SUCCESS) {
+					nextUpload = res.getNextUploadTime() + 1000;
+					if (nextUpload < 0)
+						nextUpload = 300000;
+					logger.debug("The download run completed with a status of {}.",
+							res.getDownload().download_status.toString());
+					if (!res.getDownload().sgv.isEmpty()) {
+						List<SensorGlucoseValueEntry> sgvs = res.getDownload().sgv;
+						if (sgvs != null && sgvs.size() > 0) {
+							SensorGlucoseValueEntry latestSgv = sgvs.get(sgvs.size() - 1);
+							logger.info("The most recent sgv is {} mg/dl at {}", latestSgv.sgv_mgdl,
+									Utils.receiverTimeToDate(latestSgv.disp_timestamp_sec).toString());
+						}
 					}
+					logger.info("The next run will occur in {} seconds", nextUpload / 1000);
+					uploader.upload(res, 1);
 				}
-				logger.info("The next run will occur in {} seconds", nextUpload / 1000);
-				uploader.upload(res, 1);
 			} catch (Exception ex) {
 				// assume a device communication error occurred
 				device = null;

@@ -7,13 +7,15 @@ public class DownloadResults {
     private long nextUploadTime;
     private JSONArray resultArray;
     private long displayTime;
-
+    private DownloadStatus status;
+    
     public DownloadResults(G4Download download, long nextUploadTime,
-                           JSONArray resultArray, long displayTime) {
+                           JSONArray resultArray, long displayTime, DownloadStatus status) {
         this.download = download;
         this.nextUploadTime = nextUploadTime;
         this.resultArray = resultArray;
         this.displayTime = displayTime;
+        this.status = status;
     }
 
     public void setDownload(G4Download download) {
@@ -42,5 +44,11 @@ public class DownloadResults {
 
     public long getNextUploadTime() {
         return nextUploadTime;
+    }
+    public DownloadStatus getDownloadStatus() {
+    	return status;
+    }
+    public void setDownloadStatus(DownloadStatus status) {
+    	this.status= status;
     }
 }

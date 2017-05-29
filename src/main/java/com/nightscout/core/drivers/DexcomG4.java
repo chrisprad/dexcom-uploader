@@ -64,8 +64,10 @@ public class DexcomG4 extends AbstractDevice {
         try {
             transport.open();
         } catch (IOException e) {
-            //TODO record this in the event log later
             status = DownloadStatus.IO_ERROR;
+            DownloadResults results = new DownloadResults(null, -10000 //-10000 is just a sufficiently negative number to ensure that the system tries again in 5 minutes
+            		, null, 0, status);
+            return results;
         }
         ReadData readData = new ReadData(transport);
 
@@ -153,7 +155,7 @@ public class DexcomG4 extends AbstractDevice {
                 e.printStackTrace();
             }
         }
-        return new DownloadResults(downloadBuilder.build(), nextUploadTime, array, displayTime);
+        return new DownloadResults(downloadBuilder.build(), nextUploadTime, array, displayTime, status);
     }
 
     public void setNumOfPages(int numOfPages) {
