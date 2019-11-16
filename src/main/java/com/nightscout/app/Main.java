@@ -80,9 +80,11 @@ public class Main {
 				device.setNumOfPages(1);
 				DownloadResults res = device.download();
 				if (res.getDownloadStatus() == DownloadStatus.SUCCESS) {
-					nextUpload = res.getNextUploadTime() + 1000;
+					nextUpload = res.getNextUploadTime();
 					if (nextUpload < 0)
-						nextUpload = 300000;
+						nextUpload = 30000; //missed reading? try again in 30 seconds
+					else
+						nextUpload += 2000; //push forward 2 seconds to ensure the next reading comes in
 					logger.debug("The download run completed with a status of {}.",
 							res.getDownload().download_status.toString());
 					if (!res.getDownload().sgv.isEmpty()) {

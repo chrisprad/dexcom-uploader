@@ -9,6 +9,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -52,7 +54,12 @@ public abstract class AbstractRestUploader extends BaseUploader {
         httpPost.addHeader("Accept", "application/json");
         setExtraHeaders(httpPost);
         httpPost.setEntity(new StringEntity(jsonObject.toString()));
-        HttpResponse response = getClient().execute(httpPost);
+        HttpClient client = getClient();
+        HttpParams params = client.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, 15000);
+        HttpConnectionParams.setSoTimeout(params, 15000);
+        //HttpResponse response = getClient().execute(httpPost);
+        HttpResponse response = client.execute(httpPost); 
         int statusCodeFamily = response.getStatusLine().getStatusCode() / 100;
         response.getEntity().consumeContent();
         return statusCodeFamily == 2;
