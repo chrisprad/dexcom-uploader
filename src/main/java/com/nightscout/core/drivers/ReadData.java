@@ -79,6 +79,11 @@ public class ReadData {
     public List<MeterRecord> getRecentMeterRecords() throws IOException {
         log.debug("Reading Meter page...");
         int endPage = readDataBasePageRange(RecordType.METER_DATA);
+        if(endPage == -1) {
+            log.debug("Calibration range is -1, this device probably doesn't have any pages yet");
+            //return an empty set
+            return new ArrayList<MeterRecord>();
+        }
         byte[] data = readDataBasePage(RecordType.METER_DATA, endPage);
         return parsePage(data, MeterRecord.class);
     }
@@ -106,7 +111,7 @@ public class ReadData {
         log.debug("Reading Cal Records page range...");
         int endPage = readDataBasePageRange(RecordType.CAL_SET);
         if(endPage == -1) {
-        	log.debug("Calibration range is -1, this is probably a Dexcom G5 device");
+        	log.debug("Calibration range is -1, this device probably doesn't have any pages yet");
         	//return an empty set
         	return new ArrayList<CalRecord>();
         }
